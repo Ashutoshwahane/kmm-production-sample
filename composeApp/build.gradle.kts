@@ -12,7 +12,7 @@ plugins {
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     targetHierarchy.default()
-    android {
+    androidTarget {
         compilations.all {
             kotlinOptions {
                 jvmTarget = "1.8"
@@ -105,16 +105,15 @@ android {
     }
 }
 
-tasks.getByPath("desktopProcessResources").dependsOn("libresGenerateResources")
+afterEvaluate {
+    tasks.findByPath("syncPodComposeResourcesForIos")
+        ?.dependsOn("libresGenerateResources")
+}
 
 compose {
-    kotlinCompilerPlugin.set(dependencies.compiler.forKotlin("1.8.20"))
-    kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=1.8.21")
-
     desktop {
         application {
             mainClass = "MainKt"
-
             nativeDistributions {
                 targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
                 packageName = "KotlinMultiplatformComposeDesktopApplication"
